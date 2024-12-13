@@ -1,19 +1,20 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
-import React, { useState, useRef } from 'react'
-import { DndProvider } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
-import { Toolbar } from '@/components/toolbar'
-import { LetterCanvas } from '@/components/letter-canvas'
-import { PhotoUploader } from '@/components/photo-uploader'
-import { VoiceRecorder } from '@/components/voice-recorder'
-import { DoodleDrawer } from '@/components/doodle-drawer'
-import { DottedBackground } from '@/components/dotted-background'
+import React, { useState, useRef } from "react"
+import { DndProvider } from "react-dnd"
+import { HTML5Backend } from "react-dnd-html5-backend"
+import { Toolbar } from "@/components/toolbar"
+import { LetterCanvas } from "@/components/letter-canvas"
+import { PhotoUploader } from "@/components/photo-uploader"
+import { VoiceRecorder } from "@/components/voice-recorder"
+import { DoodleDrawer } from "@/components/doodle-drawer"
+import { DottedBackground } from "@/components/dotted-background"
 // import { SpotifyPlayer } from '@/components/spotify-player'
 
 export interface LetterItem {
   id: string
-  type: 'photo' | 'note' | 'voice' | 'spotify' | 'doodle'
+  type: "photo" | "note" | "voice" | "spotify" | "doodle"
   content: string | Blob
   position: { x: number; y: number }
   rotation: number
@@ -35,15 +36,20 @@ export default function DigitalLetterComposer() {
     setItems((prevItems) => [...prevItems, item])
   }
 
-  const updateItemPosition = (id: string, position: { x: number; y: number }) => {
+  const updateItemPosition = (
+    id: string,
+    position: { x: number; y: number }
+  ) => {
     setItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id ? { ...item, position } : item
-      )
+      prevItems.map((item) => (item.id === id ? { ...item, position } : item))
     )
   }
 
-  const updateItemContent = (id: string, content: string, field: string = 'content') => {
+  const updateItemContent = (
+    id: string,
+    content: string,
+    field: string = "content"
+  ) => {
     setItems((prevItems) =>
       prevItems.map((item) =>
         item.id === id ? { ...item, [field]: content } : item
@@ -55,12 +61,15 @@ export default function DigitalLetterComposer() {
     setItems((prevItems) => prevItems.filter((item) => item.id !== id))
   }
 
-  const handleDragStart = (e: React.MouseEvent | React.TouchEvent, item: LetterItem) => {
-    const position = 'touches' in e ? e.touches[0] : e
+  const handleDragStart = (
+    e: React.MouseEvent | React.TouchEvent,
+    item: LetterItem
+  ) => {
+    const position = "touches" in e ? e.touches[0] : e
     const rect = (e.target as HTMLElement).getBoundingClientRect()
     const offsetX = position.clientX - rect.left
     const offsetY = position.clientY - rect.top
-    
+
     setIsDragging(true)
     setCurrentItem({
       ...item,
@@ -75,8 +84,8 @@ export default function DigitalLetterComposer() {
 
   const handleDragMove = (e: React.MouseEvent | React.TouchEvent) => {
     if (!isDragging || !currentItem || !canvasRef.current) return
-    
-    const position = 'touches' in e ? e.touches[0] : e
+
+    const position = "touches" in e ? e.touches[0] : e
     const rect = canvasRef.current.getBoundingClientRect()
     const x = position.clientX - rect.left - (currentItem as any).offsetX
     const y = position.clientY - rect.top - (currentItem as any).offsetY
@@ -92,47 +101,47 @@ export default function DigitalLetterComposer() {
   const addNote = (color: string) => {
     addItem({
       id: Date.now().toString(),
-      type: 'note',
-      content: '',
+      type: "note",
+      content: "",
       position: { x: Math.random() * 200, y: Math.random() * 200 },
       rotation: (Math.random() - 0.5) * 10,
-      color: color // Ensure the color is being set correctly
+      color: color, // Ensure the color is being set correctly
     })
   }
 
   const addSpotifyPlayer = (spotifyUrl: string) => {
     addItem({
       id: Date.now().toString(),
-      type: 'spotify',
+      type: "spotify",
       content: spotifyUrl,
       position: { x: Math.random() * 200, y: Math.random() * 200 },
-      rotation: (Math.random() - 0.5) * 10
+      rotation: (Math.random() - 0.5) * 10,
     })
   }
 
   const addDoodle = (doodleUrl: string) => {
     addItem({
       id: Date.now().toString(),
-      type: 'doodle',
+      type: "doodle",
       content: doodleUrl,
       position: { x: Math.random() * 200, y: Math.random() * 200 },
-      rotation: (Math.random() - 0.5) * 10
+      rotation: (Math.random() - 0.5) * 10,
     })
   }
 
-  const handleSendGift = async () => {
+  /*   const handleSendGift = async () => {
     // In a real application, you would send the gift data to your backend here
     // and generate a unique sharable link. For this example, we'll simulate it.
-    await new Promise(resolve => setTimeout(resolve, 1500)) // Simulate network request
+    await new Promise((resolve) => setTimeout(resolve, 1500)) // Simulate network request
     const uniqueId = Math.random().toString(36).substring(2, 15)
     return `https://yourdomain.com/gift/${uniqueId}`
   }
-
+ */
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="h-screen overflow-hidden bg-stone-200 flex flex-col relative">
         <DottedBackground />
-        <main 
+        <main
           className="flex-1 relative overflow-hidden z-20"
           ref={canvasRef}
           onMouseMove={handleDragMove}
@@ -141,8 +150,8 @@ export default function DigitalLetterComposer() {
           onTouchEnd={handleDragEnd}
           onMouseLeave={handleDragEnd}
         >
-          <LetterCanvas 
-            items={items} 
+          <LetterCanvas
+            items={items}
             updateItemPosition={updateItemPosition}
             updateItemContent={updateItemContent}
             deleteItem={deleteItem}
@@ -166,11 +175,11 @@ export default function DigitalLetterComposer() {
             onPhotoAdd={(photoUrl) => {
               addItem({
                 id: Date.now().toString(),
-                type: 'photo',
+                type: "photo",
                 content: photoUrl,
                 position: { x: Math.random() * 200, y: Math.random() * 200 },
                 rotation: (Math.random() - 0.5) * 10,
-                caption: ''
+                caption: "",
               })
               setIsPhotoUploaderOpen(false)
             }}
@@ -182,10 +191,10 @@ export default function DigitalLetterComposer() {
             onVoiceAdd={(audioBlob) => {
               addItem({
                 id: Date.now().toString(),
-                type: 'voice',
+                type: "voice",
                 content: audioBlob,
                 position: { x: Math.random() * 200, y: Math.random() * 200 },
-                rotation: (Math.random() - 0.5) * 10
+                rotation: (Math.random() - 0.5) * 10,
               })
               setIsVoiceRecorderOpen(false)
             }}
@@ -204,4 +213,3 @@ export default function DigitalLetterComposer() {
     </DndProvider>
   )
 }
-

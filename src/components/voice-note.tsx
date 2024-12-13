@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react'
-import { Play, Pause } from 'lucide-react'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useState, useEffect, useRef, useCallback } from "react"
+import { Play, Pause } from "lucide-react"
 
 interface VoiceNoteProps {
   audioBlob: Blob
@@ -17,7 +18,8 @@ export const VoiceNote: React.FC<VoiceNoteProps> = ({ audioBlob }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
-    const context = new (window.AudioContext || (window as any).webkitAudioContext)()
+    const context = new (window.AudioContext ||
+      (window as any).webkitAudioContext)()
     setAudioContext(context)
 
     const reader = new FileReader()
@@ -28,7 +30,7 @@ export const VoiceNote: React.FC<VoiceNoteProps> = ({ audioBlob }) => {
         setAudioBuffer(audioBuffer)
         setDuration(audioBuffer.duration)
       } catch (error) {
-        console.error('Error decoding audio data:', error)
+        console.error("Error decoding audio data:", error)
       }
     }
     reader.readAsArrayBuffer(audioBlob)
@@ -44,14 +46,14 @@ export const VoiceNote: React.FC<VoiceNoteProps> = ({ audioBlob }) => {
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
     const secs = Math.floor(seconds % 60)
-    return `${mins}:${secs.toString().padStart(2, '0')}`
+    return `${mins}:${secs.toString().padStart(2, "0")}`
   }
 
   const drawWaveform = useCallback(() => {
     if (!canvasRef.current || !audioBuffer) return
 
     const canvas = canvasRef.current
-    const ctx = canvas.getContext('2d')
+    const ctx = canvas.getContext("2d")
     if (!ctx) return
 
     const width = canvas.width
@@ -69,9 +71,9 @@ export const VoiceNote: React.FC<VoiceNoteProps> = ({ audioBlob }) => {
     for (let i = 0; i < 40; i++) {
       let min = 1.0
       let max = -1.0
-      
+
       for (let j = 0; j < step; j++) {
-        const datum = data[(i * step) + j]
+        const datum = data[i * step + j]
         if (datum < min) min = datum
         if (datum > max) max = datum
       }
@@ -82,7 +84,7 @@ export const VoiceNote: React.FC<VoiceNoteProps> = ({ audioBlob }) => {
       const progress = currentTime / duration
       const isActive = i / 40 <= progress
 
-      ctx.fillStyle = isActive ? '#EC4899' : '#EC4899' + '4D'
+      ctx.fillStyle = isActive ? "#EC4899" : "#EC4899" + "4D"
       ctx.fillRect(x, (height - barHeight) / 2, barWidth, barHeight)
       x += barWidth + gap
     }
@@ -94,7 +96,7 @@ export const VoiceNote: React.FC<VoiceNoteProps> = ({ audioBlob }) => {
 
   const updatePlaybackTime = () => {
     if (!audioContext || !startTimeRef.current) return
-    
+
     setCurrentTime(audioContext.currentTime - startTimeRef.current)
     animationFrameRef.current = requestAnimationFrame(updatePlaybackTime)
   }
@@ -117,7 +119,7 @@ export const VoiceNote: React.FC<VoiceNoteProps> = ({ audioBlob }) => {
       startTimeRef.current = audioContext.currentTime - currentTime
       source.start(0, currentTime)
       setIsPlaying(true)
-      
+
       source.onended = () => {
         setIsPlaying(false)
         setCurrentTime(0)
@@ -135,9 +137,10 @@ export const VoiceNote: React.FC<VoiceNoteProps> = ({ audioBlob }) => {
       <button
         onClick={togglePlayPause}
         className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors
-          ${isPlaying 
-            ? 'bg-pink-500 text-white hover:bg-pink-600' 
-            : 'bg-pink-500 text-white hover:bg-pink-600'
+          ${
+            isPlaying
+              ? "bg-pink-500 text-white hover:bg-pink-600"
+              : "bg-pink-500 text-white hover:bg-pink-600"
           }`}
       >
         {isPlaying ? (
@@ -146,14 +149,9 @@ export const VoiceNote: React.FC<VoiceNoteProps> = ({ audioBlob }) => {
           <Play className="w-5 h-5 ml-0.5" />
         )}
       </button>
-      
+
       <div className="flex-1">
-        <canvas
-          ref={canvasRef}
-          width={160}
-          height={40}
-          className="w-full"
-        />
+        <canvas ref={canvasRef} width={160} height={40} className="w-full" />
       </div>
 
       <div className="text-sm text-gray-500 p-2 tabular-nums">
@@ -162,4 +160,3 @@ export const VoiceNote: React.FC<VoiceNoteProps> = ({ audioBlob }) => {
     </div>
   )
 }
-
